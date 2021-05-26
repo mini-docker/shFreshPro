@@ -5,7 +5,7 @@
 *.so
 *.dylib
 lastupdate.tmp
-/conf
+/conf/test*.yaml
 shFreshPro
 # Test binary, built with `go test -c`
 *.test

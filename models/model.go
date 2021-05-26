@@ -21,13 +21,13 @@ type User struct { // 用户表
 
 type Address struct { // 地址表
 	Id        int
-	Receiver  string `orm:"size(20)"`      //收件人
-	Addr      string `orm:"size(50)"`      //收件地址
-	Zipcode   string `orm:"size(20)"`      //邮编
-	Phone     string `orm:"size(20)"`      //联系方式
-	Isdefault bool   `orm:"defalt(false)"` //是否默认 false 为非默认  true为默认
-	User      *User  `orm:"rel(fk)"`       //用户ID
-	OrderInfo []*OrderInfo
+	Receiver  string       `orm:"size(20)"`      //收件人
+	Addr      string       `orm:"size(50)"`      //收件地址
+	Zipcode   string       `orm:"size(20)"`      //邮编
+	Phone     string       `orm:"size(20)"`      //联系方式
+	Isdefault bool         `orm:"defalt(false)"` //是否默认 false 为非默认  true为默认
+	User      *User        `orm:"rel(fk)"`       //用户ID
+	OrderInfo []*OrderInfo `orm:"reverse(many)"`
 }
 
 type Goods struct { //商品SPU表
@@ -177,7 +177,7 @@ func init() {
 	)
 	orm.RegisterDataBase("default", "mysql", target_url)
 
-	orm.RegisterModel(new(User))
+	orm.RegisterModel(new(User), new(Address), new(OrderGoods), new(OrderInfo), new(IndexPromotionBanner), new(IndexTypeGoodsBanner), new(IndexGoodsBanner), new(GoodsImage), new(GoodsSKU), new(GoodsType), new(Goods))
 
 	orm.RunSyncdb("default", false, true)
 }

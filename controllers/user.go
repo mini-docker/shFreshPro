@@ -163,5 +163,17 @@ func (this *UserController) HandleLogin() {
 		this.Ctx.SetCookie("userName", userName, -1)
 	}
 
-	this.Ctx.WriteString("登录成功")
+	//跳转到首页,
+	/*
+		1.首页的简单显示实现
+		2.登录判断（路由过滤器）
+		3.首页显示
+		4.三个页面
+			视图布局
+			添加地址页（如何让页面只显示一个地址）
+			用户中心信息页显示
+	*/
+	this.SetSession("userName", userName)
+	// this.Ctx.WriteString("登录成功")
+	this.Redirect("/", 302)
 }

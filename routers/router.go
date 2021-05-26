@@ -9,12 +9,14 @@ import (
 
 func init() {
 	beego.InsertFilter("/user/*", beego.BeforeExec, filterFunc)
-	beego.Router("/", &controllers.MainController{})
+	// beego.Router("/", &controllers.MainController{})
+	beego.Router("/", &controllers.GoodsController{}, "get:ShowIndex")
 	beego.Router("/register", &controllers.UserController{}, "get:ShowReg;post:HandleReg")
 	//激活用户
 	beego.Router("/active", &controllers.UserController{}, "get:ActiveUser")
 	//用户登录
 	beego.Router("/login", &controllers.UserController{}, "get:ShowLogin;post:HandleLogin")
+
 }
 
 var filterFunc = func(ctx *beecontext.Context) {

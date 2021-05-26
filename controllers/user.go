@@ -177,3 +177,9 @@ func (this *UserController) HandleLogin() {
 	// this.Ctx.WriteString("登录成功")
 	this.Redirect("/", 302)
 }
+
+func (this *UserController) Logout() {
+	this.DelSession("userName")
+	//跳转视图
+	this.Redirect("/login", 302)
+}

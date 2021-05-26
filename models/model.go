@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -164,6 +165,14 @@ type OrderGoods struct { //订单商品表
 }
 
 func init() {
+	l := logs.GetLogger()
+	l.Println("this is a message of http")
+	logs.GetLogger("ORM").Println("this is a message of orm")
+	logs.Debug("my book is bought in the year of ", 2016)
+	logs.Info("this %s cat is %v years old", "yellow", 3)
+	logs.Warn("json is a type of kv like", map[string]int{"key": 2016})
+	logs.Error(1024, "is a very", "good game")
+	logs.Critical("oh,crash")
 
 	// 使用全局变量
 	GetYaml()

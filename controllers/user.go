@@ -183,3 +183,32 @@ func (this *UserController) Logout() {
 	//跳转视图
 	this.Redirect("/login", 302)
 }
+
+//用户中心信息页
+func (this *UserController) ShowUserCenterInfo() {
+
+	userName := GetUser(&this.Controller)
+	this.Data["userName"] = userName
+
+	this.Layout = "userCenterLayout.html"
+	this.TplName = "user_center_info.html"
+}
+
+//用户中心订单页
+func (this *UserController) ShowUserCenterOrder() {
+
+	userName := GetUser(&this.Controller)
+	this.Data["userName"] = userName
+
+	this.Layout = "userCenterLayout.html"
+	this.TplName = "user_center_order.html"
+}
+
+//
+func (this *UserController) ShowUserCenterSite() {
+	userName := GetUser(&this.Controller)
+	this.Data["userName"] = userName
+
+	this.Layout = "userCenterLayout.html"
+	this.TplName = "user_center_site.html"
+}

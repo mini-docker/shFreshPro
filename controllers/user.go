@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/core/utils"
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -190,6 +191,16 @@ func (this *UserController) ShowUserCenterInfo() {
 	userName := GetUser(&this.Controller)
 	this.Data["userName"] = userName
 
+	o := orm.NewOrm()
+	var addr models.Address
+	o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName).Filter("Isdefault", true).One(&addr)
+
+	if addr.Id == 0 {
+		this.Data["addr"] = ""
+	} else {
+		this.Data["addr"] = addr
+	}
+
 	this.Layout = "userCenterLayout.html"
 	this.TplName = "user_center_info.html"
 }
@@ -209,6 +220,57 @@ func (this *UserController) ShowUserCenterSite() {
 	userName := GetUser(&this.Controller)
 	this.Data["userName"] = userName
 
+	o := orm.NewOrm()
+	var addr models.Address
+	o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName).Filter("Isdefault", true).One(&addr)
+
+	if addr.Id == 0 {
+		this.Data["addr"] = ""
+	} else {
+		this.Data["addr"] = addr
+	}
+
 	this.Layout = "userCenterLayout.html"
 	this.TplName = "user_center_site.html"
+}
+
+//
+func (this *UserController) HandleUserCenterSite() {
+	receiver := this.GetString("receiver")
+	addr := this.GetString("addr")
+	zipCode := this.GetString("zipCode")
+	phone := this.GetString("phone")
+
+	if receiver == "" || addr == "" || zipCode == "" || phone == "" {
+		logs.Info("添加数据不完整")
+		this.Redirect("/user/userCenterSite", 302)
+		return
+	}
+
+	o := orm.NewOrm()
+	var addrUser models.Address
+	addrUser.Isdefault = true
+	err := o.Read(&addrUser, "Isdefault")
+	// 添加默认地址之前需要把原来的默认地址更新成非默认地址
+	if err == nil {
+		addrUser.Isdefault = false
+		o.Update(&addrUser)
+	}
+	// 更新默认地址时，给原来的地址对象的ID赋值了，这时候用原来的地址对象插入，意思是用原来的ID做插入操作,会报错
+	// 关联
+	userName := this.GetSession("userName")
+	var user models.User
+	user.Name = userName.(string)
+	o.Read(&user, "Name")
+
+	var addUserNew models.Address
+	addUserNew.Receiver = receiver
+	addUserNew.Zipcode = zipCode
+	addUserNew.Addr = addr
+	addUserNew.Phone = phone
+	addUserNew.Isdefault = true
+	addUserNew.User = &user
+	o.Insert(&addUserNew)
+
+	this.Redirect("/user/userCenterSite", 302)
 }

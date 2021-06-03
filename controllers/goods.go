@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"shFreshPro/models"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -65,5 +67,48 @@ func (this *GoodsController) ShowIndex() {
 		value["imgGoods"] = imgGoods
 	}
 	this.Data["goods"] = goods
+	a, _ := json.Marshal(goods)
+
+	var b []map[string]interface{}
+	err := json.Unmarshal(a, &b)
+	if err != nil {
+		logs.Info("UnMarshal error", err)
+	}
+
+	logs.Info("goods: ", b)
 	this.TplName = "index.html"
 }
+
+// goods
+// [imgGoods:
+//     [map
+//         [DisplayType:1
+//             GoodsSKU:map[Desc:草莓简介
+//                             Goods:map[Detail: GoodsSKU:<nil> Id:1 Name:]
+//                             GoodsImage:<nil>
+//                             GoodsType:map[GoodsSKU:<nil> Id:1 Image: IndexTypeGoodsBanner:<nil> Logo: Name:]
+//                             Id:1
+//                             Image:group1/M00/00/00/rBCzg1oKqFGAR2tjAAAljHPuXJg4272079
+//                             IndexGoodsBanner:<nil>
+//                             IndexTypeGoodsBanner:<nil>
+//                             Name:草莓 500g
+//                             OrderGoods:<nil>
+//                             Price:10
+//                             Sales:0
+//                             Status:1
+//                             Stock:98
+//                             Time:2017-11-15T04:10:14+04:00
+//                             Unite:500g
+//                         ]
+//             GoodsType:map[GoodsSKU:<nil>
+//                             Id:1
+//                             Image:group1/M00/00/00/rBCzg1oKeNKAEl87AAAmv27pX4k4942898
+//                             IndexTypeGoodsBanner:<nil>
+//                             Logo:fruit
+//                             Name:新鲜水果
+//                         ]
+//             Id:1
+//             Index:0
+//         ]
+//     ]
+// ]

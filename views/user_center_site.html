@@ -14,7 +14,9 @@
 				<div class="site_con">
 					<dl>
 						<dt>当前地址：</dt>
+						{{if compare .isaddr 1}}
 						<dd>{{.addr.Addr}} （{{.addr.Receiver}} 收） {{.addr.Phone}}</dd>
+						{{end}}
 					</dl>					
 				</div>
 				<h3 class="common_title2">编辑地址</h3>

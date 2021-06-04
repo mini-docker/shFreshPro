@@ -24,6 +24,10 @@ func init() {
 	beego.Router("/user/userCenterOrder", &controllers.UserController{}, "get:ShowUserCenterOrder")
 	//用户中心地址页  命名语义化 命名即注释
 	beego.Router("/user/userCenterSite", &controllers.UserController{}, "get:ShowUserCenterSite;post:HandleUserCenterSite")
+	//商品详情展示
+	beego.Router("/goodsDetail", &controllers.GoodsController{}, "get:ShowGoodsDetail")
+	//商品列表页
+	beego.Router("/goodsList", &controllers.GoodsController{}, "get:ShowList")
 
 }
 

@@ -23,6 +23,7 @@ type User struct { // 用户表
 type Address struct { // 地址表
 	Id        int
 	Receiver  string       `orm:"size(20)"`      //收件人
+	Address   string       `orm:"size(50)"`      //收件地址
 	Addr      string       `orm:"size(50)"`      //收件地址
 	Zipcode   string       `orm:"size(20)"`      //邮编
 	Phone     string       `orm:"size(20)"`      //联系方式

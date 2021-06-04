@@ -226,10 +226,12 @@ func (this *UserController) ShowUserCenterSite() {
 
 	if addr.Id == 0 {
 		this.Data["addr"] = ""
+		this.Data["address"] = ""
 	} else {
 		this.Data["addr"] = addr
+		this.Data["address"] = addr
 	}
-
+	logs.Info(this.Data["addr"], "llllllll")
 	this.Layout = "userCenterLayout.html"
 	this.TplName = "user_center_site.html"
 }

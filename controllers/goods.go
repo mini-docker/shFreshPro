@@ -263,3 +263,25 @@ func (this *GoodsController) ShowList() {
 
 	this.TplName = "list.html"
 }
+
+// 处理搜索
+func (this *GoodsController) HandleSearch() {
+	goodsName := this.GetString("goodsName")
+	o := orm.NewOrm()
+	var goods []models.GoodsSKU
+
+	if goodsName == "" {
+		o.QueryTable("GoodsSKU").All(&goods)
+		this.Data["goods"] = goods
+		ShowLayout(&this.Controller)
+		this.TplName = "search.html"
+		return
+	}
+
+	//处理数据
+	o.QueryTable("GoodsSKU").Filter("Name__icontains", goodsName).All(&goods)
+	//返回视图
+	this.Data["goods"] = goods
+	ShowLayout(&this.Controller)
+	this.TplName = "search.html"
+}

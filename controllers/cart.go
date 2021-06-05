@@ -123,3 +123,89 @@ func (this *CartController) ShowCart() {
 
 	this.TplName = "cart.html"
 }
+
+func (this *CartController) HandleUpdateCart() {
+	//获取数据
+	skuid, err1 := this.GetInt("skuid")
+	count, err2 := this.GetInt("count")
+	resp := make(map[string]interface{})
+	defer this.ServeJSON()
+
+	//校验数据
+	if err1 != nil || err2 != nil {
+		resp["code"] = 1
+		resp["errmsg"] = "请求数据不正确"
+		this.Data["json"] = resp
+		return
+	}
+	userName := this.GetSession("userName")
+	if userName == nil {
+		resp["code"] = 3
+		resp["errmsg"] = "当前用户未登录"
+		this.Data["json"] = resp
+		return
+	}
+
+	o := orm.NewOrm()
+	var user models.User
+	user.Name = userName.(string)
+	o.Read(&user, "Name")
+
+	conn, err := redis.Dial("tcp", "127.0.0.1:6379")
+	if err != nil {
+		resp["code"] = 2
+		resp["errmsg"] = "redis数据库链接失败"
+		this.Data["json"] = resp
+		return
+	}
+	defer conn.Close()
+
+	conn.Do("hset", "cart_"+strconv.Itoa(user.Id), skuid, count)
+
+	resp["code"] = 5
+	resp["errmsg"] = "OK"
+
+	this.Data["json"] = resp
+}
+
+func (this *CartController) DeleteCart() {
+	skuid, err := this.GetInt("skuid")
+
+	resp := make(map[string]interface{})
+	defer this.ServeJSON()
+
+	//校验数据
+	if err != nil {
+		resp["code"] = 1
+		resp["errmsg"] = "请求数据不正确"
+
+		this.Data["json"] = resp
+		return
+	}
+
+	//链接数据库
+	conn, err := redis.Dial("tcp", "127.0.0.1:6379")
+	defer conn.Close()
+	if err != nil {
+		resp["code"] = 2
+		resp["errmsg"] = "redis数据库链接失败"
+
+		this.Data["json"] = resp
+		return
+	}
+
+	o := orm.NewOrm()
+	userName := this.GetSession("userName")
+	var user models.User
+	user.Name = userName.(string)
+
+	o.Read(&user, "Name")
+
+	conn.Do("hdel", "cart_"+strconv.Itoa(user.Id), skuid)
+
+	//返回数据
+	resp["code"] = 5
+	resp["errmsg"] = "ok"
+	this.Data["json"] = resp
+
+}

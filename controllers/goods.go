@@ -16,12 +16,44 @@ type GoodsController struct {
 	beego.Controller
 }
 
+func B2S(bs []uint8) string {
+	ba := []byte{}
+	for _, b := range bs {
+		ba = append(ba, byte(b))
+	}
+	return string(ba)
+}
+
 func GetUser(this *beego.Controller) string {
 	userName := this.GetSession("userName")
 	if userName == nil {
 		this.Data["userName"] = ""
 	} else {
 		this.Data["userName"] = userName.(string)
+		o := orm.NewOrm()
+		var user models.User
+		user.Name = userName.(string)
+		o.Read(&user, "Name")
+		conn, err := redis.Dial("tcp", "127.0.0.1:6379")
+		defer conn.Close()
+		resp := make(map[string]interface{})
+		if err != nil {
+			resp["code"] = 2
+			resp["errmsg"] = "redis数据库链接失败"
+			this.Data["json"] = resp
+			logs.Error("redis数据库链接失败")
+		}
+		goodsTypeCount, err := conn.Do("hget", "cart_"+strconv.Itoa(user.Id), "goodsTypeCount")
+		logs.Info("goodsTypeCount", goodsTypeCount)
+		if err != nil {
+			this.Data["goodsTypeCount"] = 0
+			logs.Error("redis数据库链接失败")
+		} else if goodsTypeCount == nil {
+			this.Data["goodsTypeCount"] = 0
+		} else {
+			this.Data["goodsTypeCount"] = B2S(goodsTypeCount.([]uint8))
+		}
+
 		return userName.(string)
 	}
 	return ""
@@ -110,7 +142,6 @@ func (this *GoodsController) ShowIndex() {
 		logs.Info("UnMarshal error", err)
 	}
 
-	// logs.Info("goods: ", b)
 	this.TplName = "index.html"
 }
 

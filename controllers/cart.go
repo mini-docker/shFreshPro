@@ -63,6 +63,8 @@ func (this *CartController) HandleAddCart() {
 	resp["msg"] = "Ok"
 	resp["cartCount"] = cartCount
 
+	conn.Do("hset", "cart_"+strconv.Itoa(user.Id), "goodsTypeCount", cartCount)
+
 	this.Data["json"] = resp
 
 	// 由于 ServeJSON 直接返回json对象数据
@@ -202,6 +204,21 @@ func (this *CartController) DeleteCart() {
 	o.Read(&user, "Name")
 
 	conn.Do("hdel", "cart_"+strconv.Itoa(user.Id), skuid)
+
+	// 处理通用商品类型数量
+	goodsTypeCount, err := conn.Do("hget", "cart_"+strconv.Itoa(user.Id), "goodsTypeCount")
+	logs.Info("goodsTypeCount", goodsTypeCount)
+	if err != nil {
+		this.Data["goodsTypeCount"] = 0
+		logs.Error("redis数据库链接失败")
+	} else if goodsTypeCount == nil {
+		this.Data["goodsTypeCount"] = 0
+	} else {
+		this.Data["goodsTypeCount"] = B2S(goodsTypeCount.([]uint8))
+		a, _ := strconv.Atoi((this.Data["goodsTypeCount"]).(string))
+		logs.Info(a-1, "aaaaa")
+		conn.Do("hset", "cart_"+strconv.Itoa(user.Id), "goodsTypeCount", a-1)
+	}
 
 	//返回数据
 	resp["code"] = 5

@@ -51,7 +51,10 @@
 		</div>
 		<div class="guest_cart fr">
 			<a href="/user/cart" class="cart_name fl">我的购物车</a>
-			<div class="goods_count fl" id="show_count">{{.totalCount}}</div>
+			{{if compare .goodsTypeCount 0}}
+			{{else}}
+			<div class="goods_count fl" id="show_count">{{.goodsTypeCount}}</div>
+			{{end}}
 		</div>
 	</div>
 

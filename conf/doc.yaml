@@ -1,0 +1,9 @@
+mysql:
+  user : root
+  password : root
+  host : 127.0.0.1
+  port : 33061
+  name : dailyfresh_pro
+user:
+  emailConfig: "{\"username\":\"xudd666@qq.com\",\"password\":\"jinluryyngygdhgb\",\"host\":\"smtp.qq.com\",\"port\":587}"
+  from: xudd666@qq.com

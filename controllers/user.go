@@ -206,14 +206,14 @@ func (this *UserController) ShowUserCenterInfo() {
 }
 
 //用户中心订单页
-func (this *UserController) ShowUserCenterOrder() {
+// func (this *UserController) ShowUserCenterOrder() {
 
-	userName := GetUser(&this.Controller)
-	this.Data["userName"] = userName
+// 	userName := GetUser(&this.Controller)
+// 	this.Data["userName"] = userName
 
-	this.Layout = "userCenterLayout.html"
-	this.TplName = "user_center_order.html"
-}
+// 	this.Layout = "userCenterLayout.html"
+// 	this.TplName = "user_center_order.html"
+// }
 
 //
 func (this *UserController) ShowUserCenterSite() {
@@ -278,4 +278,40 @@ func (this *UserController) HandleUserCenterSite() {
 	o.Insert(&addUserNew)
 
 	this.Redirect("/user/userCenterSite", 302)
+}
+
+//展示用户中心订单页
+func (this *UserController) ShowUserCenterOrder() {
+	userName := GetUser(&this.Controller)
+	o := orm.NewOrm()
+
+	var user models.User
+	user.Name = userName
+	o.Read(&user, "Name")
+
+	//获取订单表的数据
+	var orderInfos []models.OrderInfo
+	o.QueryTable("OrderInfo").RelatedSel("User").Filter("User__Id", user.Id).All(&orderInfos)
+
+	goodsBuffer := make([]map[string]interface{}, len(orderInfos))
+
+	for index, orderInfo := range orderInfos {
+
+		var orderGoods []models.OrderGoods
+		o.QueryTable("OrderGoods").RelatedSel("OrderInfo", "GoodsSKU").Filter("OrderInfo__Id", orderInfo.Id).All(&orderGoods)
+
+		temp := make(map[string]interface{})
+		temp["orderInfo"] = orderInfo
+		temp["orderGoods"] = orderGoods
+
+		goodsBuffer[index] = temp
+
+	}
+
+	this.Data["goodsBuffer"] = goodsBuffer
+
+	//订单商品表
+
+	this.Layout = "userCenterLayout.html"
+	this.TplName = "user_center_order.html"
 }

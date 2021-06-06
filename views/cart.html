@@ -60,9 +60,9 @@
 	</ul>
 <form action="/user/showOrder" method="post">
     {{range .goods}}
-
+        {{if gt .goodsSku.Id 0}}
     	<ul class="cart_list_td clearfix">
-    		<li class="col01"><input type="checkbox" name="skuid" checked value="{{.goodsSku.Id}}"></li>
+    		<li class="col01">{{.goodsSku.Id}}<input type="checkbox" name="skuid" checked value="{{.goodsSku.Id}}"></li>
     		<li class="col02"><img src="http://127.0.0.1:8888/{{.goodsSku.Image}}"></li>
     		<li class="col03">{{.goodsSku.Name}}<br><em>{{.goodsSku.Price}}元/{{.goodsSku.Unite}}</em></li>
     		<li class="col04">{{.goodsSku.Unite}}</li>
@@ -78,6 +78,7 @@
 
     		<li class="col08"><a href="javascript:;" class="deleteCart" skuid="{{.goodsSku.Id}}">删除</a></li>
     	</ul>
+        {{end}}
     {{end}}
 
 	<ul class="settlements">

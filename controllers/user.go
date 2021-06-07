@@ -117,7 +117,6 @@ func (this *UserController) ShowLogin() {
 }
 
 //处理登录业务
-//处理登录业务
 func (this *UserController) HandleLogin() {
 
 	//1.获取数据
@@ -190,11 +189,13 @@ func (this *UserController) ShowUserCenterInfo() {
 
 	userName := GetUser(&this.Controller)
 	this.Data["userName"] = userName
-
 	o := orm.NewOrm()
+	// var user models.User
+	// user.Name = userName
+	// o.Read(&user, "Name")
 	var addr models.Address
+	// 根据用户id链接 地址表，查到对应的地址信息
 	o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName).Filter("Isdefault", true).One(&addr)
-
 	if addr.Id == 0 {
 		this.Data["addr"] = ""
 	} else {
@@ -252,11 +253,11 @@ func (this *UserController) HandleUserCenterSite() {
 		return
 	}
 
+	// 添加默认地址之前需要把原来的默认地址更新成非默认地址
 	o := orm.NewOrm()
 	var addrUser models.Address
 	addrUser.Isdefault = true
 	err := o.Read(&addrUser, "Isdefault")
-	// 添加默认地址之前需要把原来的默认地址更新成非默认地址
 	if err == nil {
 		addrUser.Isdefault = false
 		o.Update(&addrUser)
@@ -270,13 +271,12 @@ func (this *UserController) HandleUserCenterSite() {
 
 	var addUserNew models.Address
 	addUserNew.Receiver = receiver
-	addUserNew.Zipcode = zipCode
 	addUserNew.Addr = addr
+	addUserNew.Zipcode = zipCode
 	addUserNew.Phone = phone
 	addUserNew.Isdefault = true
 	addUserNew.User = &user
 	o.Insert(&addUserNew)
-
 	this.Redirect("/user/userCenterSite", 302)
 }
 
